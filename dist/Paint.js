@@ -92,7 +92,7 @@ var Paint = function () {
 
       var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-      var directionalLight = new _Three2.default.DirectionalLight(this.lightColor);
+      var directionalLight = new _Three2.default.DirectionalLight(0xffffff, 0.5);
       (_directionalLight$pos = directionalLight.position).set.apply(_directionalLight$pos, _toConsumableArray(lights));
       directionalLight.name = DIRECTIONAL_LIGHT + index;
       directionalLight.position.normalize();
@@ -191,12 +191,14 @@ var Paint = function () {
       }
 
       this.camera.position.set(this.cameraX, this.cameraY, this.cameraZ);
-
+      var directionalLight = new _Three2.default.DirectionalLight(0xffffff, 0.5);
+      this.camera.add(directionalLight);
       this.scene.add(this.camera);
 
       this.camera.lookAt(this.mesh);
 
       this.renderer.set;
+      this.renderer.physicallyCorrectLights = true;
       this.renderer.setSize(this.width, this.height);
       this.renderer.setClearColor(this.backgroundColor, 1);
     }
