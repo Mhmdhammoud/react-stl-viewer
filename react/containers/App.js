@@ -5,8 +5,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      color: '#FF0000',
-      model: undefined
+      color: 'rgba(255,0,48,0.2)',
+      model: undefined,
     };
 
     this.clickBlue = this.clickBlue.bind(this);
@@ -38,7 +38,7 @@ class App extends Component {
         <input id="image-file" type="file" onChange={this.onChange} />
         <STLViewer
           modelColor={this.state.color}
-          lights={[[0.5, 1, -1], [1, 1, 1]]}
+          lights={[1, 1]}
           rotate={true}
           model={this.state.model}
         />
