@@ -10,8 +10,6 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _halogenium = require('halogenium');
-
 var _Paint = require('./Paint');
 
 var _Paint2 = _interopRequireDefault(_Paint);
@@ -84,7 +82,7 @@ var STLViewer = function (_Component) {
               alignItems: 'center'
             }
           },
-          _react2.default.createElement(_halogenium.ScaleLoader, { color: modelColor, size: '16px' })
+          _react2.default.createElement('div', { className: 'spinner spinner-blue' })
         )
       );
     }

@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ScaleLoader } from 'halogenium';
 import Paint from './Paint';
-
 class STLViewer extends Component {
   static propTypes = {
     className: PropTypes.string,
@@ -21,8 +19,8 @@ class STLViewer extends Component {
     rotationSpeeds: PropTypes.arrayOf(PropTypes.number),
     model: PropTypes.oneOfType([
       PropTypes.string,
-      PropTypes.instanceOf(ArrayBuffer)
-    ]).isRequired
+      PropTypes.instanceOf(ArrayBuffer),
+    ]).isRequired,
   };
 
   static defaultProps = {
@@ -38,7 +36,7 @@ class STLViewer extends Component {
     lights: [0, 0, 1],
     lightColor: '#ffffff',
     rotationSpeeds: [0, 0, 0.02],
-    model: undefined
+    model: undefined,
   };
 
   componentDidMount() {
@@ -68,7 +66,7 @@ class STLViewer extends Component {
         style={{
           width: width,
           height: height,
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
       >
         <div
@@ -76,10 +74,10 @@ class STLViewer extends Component {
             height: '100%',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
-          <ScaleLoader color={modelColor} size="16px" />
+          <div className="spinner spinner-blue"></div>
         </div>
       </div>
     );
