@@ -38,10 +38,13 @@ class STLViewer extends Component {
     rotationSpeeds: [0, 0, 0.02],
     model: undefined,
   };
+  constructor(props) {
+    super(props);
+  }
 
   componentDidMount() {
     this.paint = new Paint();
-    this.paint.init(this);
+    this.paint.init(this, this.props.sliders);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -50,7 +53,7 @@ class STLViewer extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     this.props = nextProps;
-    this.paint.init(this);
+    this.paint.init(this, this.props.sliders);
   }
 
   componentWillUnmount() {

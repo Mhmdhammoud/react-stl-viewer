@@ -14,7 +14,8 @@ class Paint {
     this.reqNumber = 0;
   }
 
-  init(context) {
+  init(context, sliders) {
+    this.sliders = sliders;
     this.component = context;
     this.width = context.props.width;
     this.height = context.props.height;
@@ -93,24 +94,41 @@ class Paint {
 
   addSTLToScene(reqId) {
     let loadPromise;
-    if (typeof this.model === 'string') {
-      loadPromise = this.loadSTLFromUrl(this.model, reqId);
-    } else if (this.model instanceof ArrayBuffer) {
-      loadPromise = this.loadFromFile(this.model);
-    } else {
-      return Promise.resolve(null);
-    }
-    return loadPromise.then((geometry) => {
+    let loadPromise2;
+    loadPromise = this.loadSTLFromUrl(
+      'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_outputmodel09-04-2022:20:09:47.stl',
+      reqId
+    );
+    loadPromise2 = this.loadSTLFromUrl(
+      'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_faceplatemodel09-04-2022:20:09:2.stl',
+      reqId
+    );
+
+    // if (typeof this.model === 'string') {
+    //   loadPromise = this.loadSTLFromUrl(this.model, reqId);
+    // } else if (this.model instanceof ArrayBuffer) {
+    //   loadPromise = this.loadFromFile(
+    //     'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_outputmodel09-04-2022:20:09:47.stl'
+    //   );
+    //   loadPromise = this.loadFromFile(
+    //     'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_faceplatemodel09-04-2022:20:09:2.stl'
+    //   );
+    // } else {
+    //   return Promise.resolve(null);
+    // }
+    loadPromise.then((geometry) => {
       // Calculate mesh noramls for MeshLambertMaterial.
       geometry.computeFaceNormals();
       geometry.computeVertexNormals();
 
       // Center the object
-      geometry.center();
+      // geometry.center();
 
       let material = new THREE.MeshLambertMaterial({
         overdraw: true,
         color: this.modelColor,
+        opacity: this.sliders[0].value,
+        transparent: true,
       });
 
       if (geometry.hasColors) {
@@ -132,6 +150,53 @@ class Paint {
         this.mesh.rotation.y = this.rotationSpeeds[1];
         this.mesh.rotation.z = this.rotationSpeeds[2];
       }
+      this.mesh.updateMatrix();
+
+      this.scene.add(this.mesh);
+
+      this.addCamera();
+      this.addInteractionControls();
+      this.addToReactComponent();
+
+      // Start the animation
+      this.animate();
+    });
+    loadPromise2.then((geometry) => {
+      // Calculate mesh noramls for MeshLambertMaterial.
+      geometry.computeFaceNormals();
+      geometry.computeVertexNormals();
+
+      // Center the object
+      // geometry.center();
+      let material = new THREE.MeshLambertMaterial({
+        overdraw: true,
+        color: this.modelColor,
+        opacity: this.sliders[1].value,
+        transparent: true,
+      });
+
+      if (geometry.hasColors) {
+        material = new THREE.MeshPhongMaterial({
+          opacity: geometry.alpha,
+          vertexColors: THREE.VertexColors,
+        });
+      }
+
+      this.mesh = new THREE.Mesh(geometry, material);
+
+      // Set the object's dimensions
+      geometry.computeBoundingBox();
+      this.xDims = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
+      this.yDims = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
+      this.zDims = geometry.boundingBox.max.z - geometry.boundingBox.min.z;
+
+      if (this.rotate) {
+        this.mesh.rotation.x = this.rotationSpeeds[0];
+        this.mesh.rotation.y = this.rotationSpeeds[1];
+        this.mesh.rotation.z = this.rotationSpeeds[2];
+      }
+      // console.log(this.mesh);
+      this.mesh.updateMatrix();
 
       this.scene.add(this.mesh);
 
@@ -182,6 +247,12 @@ class Paint {
     }
   }
 
+  changeOpacity(index, value) {
+    const allMeshChildren = this.scene.children.filter(
+      (item) => item.type === 'Mesh'
+    );
+    allMeshChildren[index].material.opacity = value;
+  }
   addToReactComponent() {
     // Add to the React Component
     ReactDOM.findDOMNode(this.component).replaceChild(
