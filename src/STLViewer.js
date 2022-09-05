@@ -21,6 +21,10 @@ class STLViewer extends Component {
       PropTypes.string,
       PropTypes.instanceOf(ArrayBuffer),
     ]).isRequired,
+    models: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.instanceOf(ArrayBuffer),
+    ]).isRequired,
   };
 
   static defaultProps = {
@@ -37,6 +41,7 @@ class STLViewer extends Component {
     lightColor: '#ffffff',
     rotationSpeeds: [0, 0, 0.02],
     model: undefined,
+    models: undefined,
   };
   constructor(props) {
     super(props);
@@ -44,7 +49,7 @@ class STLViewer extends Component {
 
   componentDidMount() {
     this.paint = new Paint();
-    this.paint.init(this, this.props.sliders);
+    this.paint.init(this, this.props.sliders, this.props.models);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -53,7 +58,7 @@ class STLViewer extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     this.props = nextProps;
-    this.paint.init(this, this.props.sliders);
+    this.paint.init(this, this.props.sliders, this.props.models);
   }
 
   componentWillUnmount() {
@@ -73,6 +78,7 @@ class STLViewer extends Component {
         }}
       >
         <div
+          id="loader"
           style={{
             height: '100%',
             display: 'flex',
