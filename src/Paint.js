@@ -12,9 +12,13 @@ class Paint {
       antialias: true,
     });
     this.reqNumber = 0;
+    this.loaded = false;
+    this.light = undefined;
   }
 
-  init(context) {
+  init(context, sliders, models) {
+    this.models = models;
+    this.sliders = sliders;
     this.component = context;
     this.width = context.props.width;
     this.height = context.props.height;
@@ -30,44 +34,40 @@ class Paint {
     this.lightColor = context.props.lightColor;
     this.model = context.props.model;
 
-    if (this.mesh !== undefined) {
-      this.scene.remove(this.mesh);
-      this.mesh.geometry.dispose();
-      this.mesh.material.dispose();
-      this.scene.remove(this.grid);
-    }
-    const directionalLightObj = this.scene.getObjectByName(DIRECTIONAL_LIGHT);
-    if (directionalLightObj) {
-      this.scene.remove(directionalLightObj);
-    }
+    // if (this.mesh !== undefined) {
+    //   this.scene.remove(this.mesh);
+    //   this.mesh.geometry.dispose();
+    //   this.mesh.material.dispose();
+    //   this.scene.remove(this.grid);
+    // }
 
     if (this.animationRequestId) {
       cancelAnimationFrame(this.animationRequestId);
     }
 
-    //Detector.addGetWebGLMessage();
     this.distance = 10000;
 
-    // lights processing
-    const hasMultipleLights = this.lights.reduce(
-      (acc, item) => acc && Array.isArray(item),
-      true
-    );
-    if (hasMultipleLights) {
-      this.lights.forEach(this.addLight.bind(this));
-    } else {
-      this.addLight(this.lights);
-    }
-
     this.reqNumber += 1;
-    this.addSTLToScene(this.reqNumber);
+    if (!this.loaded) this.addSTLToScene(this.reqNumber);
+    const meshMaterial = this.scene.children.filter(
+      (item) => item.type === 'Mesh'
+    );
+    if (meshMaterial.length === sliders.length) {
+      sliders.map((item, index) => {
+        meshMaterial[index].material.opacity = item.value;
+        // meshMaterial[index].material.visible = visibleSliders[index].value;
+        meshMaterial[index].updateMatrix();
+        this.render();
+      });
+    }
+    this.loaded = true;
   }
 
   addLight(lights, index = 0) {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(...lights);
     directionalLight.name = DIRECTIONAL_LIGHT + index;
     directionalLight.position.normalize();
+    this.light = directionalLight;
     this.scene.add(directionalLight);
   }
 
@@ -92,87 +92,114 @@ class Paint {
   }
 
   addSTLToScene(reqId) {
-    let loadPromise;
-    if (typeof this.model === 'string') {
-      loadPromise = this.loadSTLFromUrl(this.model, reqId);
-    } else if (this.model instanceof ArrayBuffer) {
-      loadPromise = this.loadFromFile(this.model);
-    } else {
-      return Promise.resolve(null);
-    }
-    return loadPromise.then((geometry) => {
-      // Calculate mesh noramls for MeshLambertMaterial.
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
+    this.models.map((item, index) => {
+      if (index === 0) {
+        // while (this.scene.children.length > 0) {
+        //   this.scene.remove(this.scene.children[0]);
+        // }
 
-      // Center the object
-      geometry.center();
-
-      let material = new THREE.MeshLambertMaterial({
-        overdraw: true,
-        color: this.modelColor,
-      });
-
-      if (geometry.hasColors) {
-        material = new THREE.MeshPhongMaterial({
-          opacity: geometry.alpha,
-          vertexColors: THREE.VertexColors,
+        // lights processing
+        const hasMultipleLights = this.lights.reduce(
+          (acc, item) => acc && Array.isArray(item),
+          true
+        );
+        if (hasMultipleLights) {
+          this.lights.forEach(this.addLight.bind(this));
+        } else {
+          this.addLight(this.lights);
+        }
+      }
+      this.loadSTLFromUrl(item, reqId).then((geometry) => {
+        // Calculate mesh noramls for MeshLambertMaterial.
+        geometry.computeFaceNormals();
+        geometry.computeVertexNormals();
+        // Center the object
+        // geometry.center();
+        let material = new THREE.MeshLambertMaterial({
+          color: this.modelColor,
+          transparent: true,
+          opacity: 1,
+          side: THREE.DoubleSide,
+          visible: true,
         });
-      }
 
-      this.mesh = new THREE.Mesh(geometry, material);
-      // Set the object's dimensions
-      geometry.computeBoundingBox();
-      this.xDims = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
-      this.yDims = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
-      this.zDims = geometry.boundingBox.max.z - geometry.boundingBox.min.z;
+        if (geometry.hasColors) {
+          material = new THREE.MeshPhongMaterial({
+            opacity: geometry.alpha,
+            vertexColors: THREE.VertexColors,
+          });
+        }
 
-      if (this.rotate) {
-        this.mesh.rotation.x = this.rotationSpeeds[0];
-        this.mesh.rotation.y = this.rotationSpeeds[1];
-        this.mesh.rotation.z = this.rotationSpeeds[2];
-      }
+        this.mesh = new THREE.Mesh(geometry, material);
+        // Set the object's dimensions
+        geometry.computeBoundingBox();
+        geometry.computeBoundingSphere();
 
-      this.scene.add(this.mesh);
+        if (this.xDims === undefined) {
+          this.xDims = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
+          this.yDims = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
+          this.zDims = geometry.boundingBox.max.z - geometry.boundingBox.min.z;
+          // this.xDims = geometry.boundingSphere.center.x;
+          // this.yDims = geometry.boundingSphere.center.y;
+          // this.zDims = geometry.boundingSphere.center.z;
+        }
 
-      this.addCamera();
-      this.addInteractionControls();
-      this.addToReactComponent();
+        if (this.rotate) {
+          this.mesh.rotation.x = this.rotationSpeeds[0];
+          this.mesh.rotation.y = this.rotationSpeeds[1];
+          this.mesh.rotation.z = this.rotationSpeeds[2];
+        }
 
-      // Start the animation
-      this.animate();
+        this.mesh.updateMatrix();
+
+        this.scene.add(this.mesh);
+
+        this.addCamera();
+        this.light.position.copy(this.camera.position);
+
+        this.addInteractionControls();
+        this.addToReactComponent();
+
+        // Start the animation
+        this.animate();
+      });
     });
   }
 
   addCamera() {
-    // Add the camera
-    this.camera = new THREE.PerspectiveCamera(
-      30,
-      this.width / this.height,
-      1,
-      this.distance
-    );
+    if (
+      !this.scene.children.find((item) => item.type === 'PerspectiveCamera')
+    ) {
+      // Add the camera
+      this.camera = new THREE.PerspectiveCamera(
+        30,
+        this.width / this.height,
+        1,
+        this.distance
+      );
 
-    if (this.cameraZ === null) {
-      this.cameraZ = Math.max(this.xDims * 3, this.yDims * 3, this.zDims * 3);
+      if (this.cameraZ === null) {
+        this.cameraZ = Math.max(this.xDims * 3, this.yDims * 3, this.zDims * 3);
+      }
+
+      this.camera.position.set(this.cameraX, this.cameraY, this.cameraZ);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      this.camera.add(directionalLight);
+      this.camera.lookAt(this.mesh);
+      this.scene.add(this.camera);
+
+      this.renderer.physicallyCorrectLights = true;
+      this.renderer.setSize(this.width, this.height);
+      this.renderer.setClearColor(this.backgroundColor, 1);
     }
-
-    this.camera.position.set(this.cameraX, this.cameraY, this.cameraZ);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    this.camera.add(directionalLight);
-    this.scene.add(this.camera);
-
-    this.camera.lookAt(this.mesh);
-
-    this.renderer.set;
-    this.renderer.physicallyCorrectLights = true;
-    this.renderer.setSize(this.width, this.height);
-    this.renderer.setClearColor(this.backgroundColor, 1);
   }
 
   addInteractionControls() {
     // Add controls for mouse interaction
     if (this.orbitControls) {
+      if (this.controls) {
+        this.controls.dispose();
+      }
       this.controls = new OrbitControls(
         this.camera,
         ReactDOM.findDOMNode(this.component)
@@ -184,10 +211,11 @@ class Paint {
 
   addToReactComponent() {
     // Add to the React Component
-    ReactDOM.findDOMNode(this.component).replaceChild(
-      this.renderer.domElement,
-      ReactDOM.findDOMNode(this.component).firstChild
-    );
+    ReactDOM.render(this.component, document.getElementById('loader'));
+    // ReactDOM.findDOMNode(this.component).replaceChild(
+    //   this.renderer.domElement,
+    //   ReactDOM.findDOMNode(this.component).firstChild
+    // );
   }
 
   /**
@@ -214,6 +242,8 @@ class Paint {
     if (this.rotate) {
       this.rotate = false;
     }
+    const directionalLight = this.scene.getObjectByName('directionalLight0');
+    directionalLight.position.copy(this.camera.position);
 
     this.render();
   }

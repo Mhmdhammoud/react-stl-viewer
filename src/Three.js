@@ -31,14 +31,14 @@ var THREE = require('three');
  *  var mesh = new THREE.Mesh( geometry, material );
  */
 
-THREE.STLLoader = function(manager) {
+THREE.STLLoader = function (manager) {
   this.manager = manager !== undefined ? manager : THREE.DefaultLoadingManager;
 };
 
 THREE.STLLoader.prototype = {
   constructor: THREE.STLLoader,
 
-  loadFromUrl: function(url, onLoad, onProgress, onError) {
+  loadFromUrl: function (url, onLoad, onProgress, onError) {
     var scope = this;
 
     var loader = new THREE.XHRLoader(scope.manager);
@@ -46,7 +46,7 @@ THREE.STLLoader.prototype = {
     loader.setResponseType('arraybuffer');
     loader.load(
       url,
-      function(text) {
+      function (text) {
         onLoad(scope.parse(text));
       },
       onProgress,
@@ -54,13 +54,13 @@ THREE.STLLoader.prototype = {
     );
   },
 
-  loadFromFile: function(buffer, onLoad) {
+  loadFromFile: function (buffer, onLoad) {
     var scope = this;
     onLoad(scope.parse(buffer));
   },
 
-  parse: function(data) {
-    var isBinary = function() {
+  parse: function (data) {
+    var isBinary = function () {
       var expect, face_size, n_faces, reader;
       reader = new DataView(binData);
       face_size = (32 / 8) * 3 + (32 / 8) * 3 * 3 + 16 / 8;
@@ -90,7 +90,7 @@ THREE.STLLoader.prototype = {
       : this.parseASCII(this.ensureString(data));
   },
 
-  parseBinary: function(data) {
+  parseBinary: function (data) {
     var reader = new DataView(data);
     var faces = reader.getUint32(80, true);
 
@@ -185,7 +185,7 @@ THREE.STLLoader.prototype = {
     return geometry;
   },
 
-  parseASCII: function(data) {
+  parseASCII: function (data) {
     var geometry,
       length,
       normal,
@@ -199,7 +199,8 @@ THREE.STLLoader.prototype = {
 
     while ((result = patternFace.exec(data)) !== null) {
       text = result[0];
-      patternNormal = /normal[\s]+([\-+]?[0-9]+\.?[0-9]*([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+/g;
+      patternNormal =
+        /normal[\s]+([\-+]?[0-9]+\.?[0-9]*([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+/g;
 
       while ((result = patternNormal.exec(text)) !== null) {
         normal = new THREE.Vector3(
@@ -209,7 +210,8 @@ THREE.STLLoader.prototype = {
         );
       }
 
-      patternVertex = /vertex[\s]+([\-+]?[0-9]+\.?[0-9]*([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+/g;
+      patternVertex =
+        /vertex[\s]+([\-+]?[0-9]+\.?[0-9]*([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+[\s]+([\-+]?[0-9]*\.?[0-9]+([eE][\-+]?[0-9]+)?)+/g;
 
       while ((result = patternVertex.exec(text)) !== null) {
         geometry.vertices.push(
@@ -234,7 +236,7 @@ THREE.STLLoader.prototype = {
     return geometry;
   },
 
-  ensureString: function(buf) {
+  ensureString: function (buf) {
     if (typeof buf !== 'string') {
       var array_buffer = new Uint8Array(buf);
       var str = '';
@@ -247,7 +249,7 @@ THREE.STLLoader.prototype = {
     }
   },
 
-  ensureBinary: function(buf) {
+  ensureBinary: function (buf) {
     if (typeof buf === 'string') {
       var array_buffer = new Uint8Array(buf.length);
       for (var i = 0; i < buf.length; i++) {
@@ -257,11 +259,11 @@ THREE.STLLoader.prototype = {
     } else {
       return buf;
     }
-  }
+  },
 };
 
 if (typeof DataView === 'undefined') {
-  DataView = function(buffer, byteOffset, byteLength) {
+  DataView = function (buffer, byteOffset, byteLength) {
     this.buffer = buffer;
     this.byteOffset = byteOffset || 0;
     this.byteLength = byteLength || buffer.byteLength || buffer.length;
@@ -269,7 +271,7 @@ if (typeof DataView === 'undefined') {
   };
 
   DataView.prototype = {
-    _getCharCodes: function(buffer, start, length) {
+    _getCharCodes: function (buffer, start, length) {
       start = start || 0;
       length = length || buffer.length;
       var end = start + length;
@@ -280,7 +282,7 @@ if (typeof DataView === 'undefined') {
       return codes;
     },
 
-    _getBytes: function(length, byteOffset, littleEndian) {
+    _getBytes: function (length, byteOffset, littleEndian) {
       var result;
 
       // Handle the lack of endianness
@@ -333,7 +335,7 @@ if (typeof DataView === 'undefined') {
 
     // Compatibility functions on a String Buffer
 
-    getFloat64: function(byteOffset, littleEndian) {
+    getFloat64: function (byteOffset, littleEndian) {
       var b = this._getBytes(8, byteOffset, littleEndian),
         sign = 1 - 2 * (b[7] >> 7),
         exponent =
@@ -364,7 +366,7 @@ if (typeof DataView === 'undefined') {
       return sign * (1 + mantissa * Math.pow(2, -52)) * Math.pow(2, exponent);
     },
 
-    getFloat32: function(byteOffset, littleEndian) {
+    getFloat32: function (byteOffset, littleEndian) {
       var b = this._getBytes(4, byteOffset, littleEndian),
         sign = 1 - 2 * (b[3] >> 7),
         exponent = (((b[3] << 1) & 0xff) | (b[2] >> 7)) - 127,
@@ -386,31 +388,31 @@ if (typeof DataView === 'undefined') {
       return sign * (1 + mantissa * Math.pow(2, -23)) * Math.pow(2, exponent);
     },
 
-    getInt32: function(byteOffset, littleEndian) {
+    getInt32: function (byteOffset, littleEndian) {
       var b = this._getBytes(4, byteOffset, littleEndian);
       return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | b[0];
     },
 
-    getUint32: function(byteOffset, littleEndian) {
+    getUint32: function (byteOffset, littleEndian) {
       return this.getInt32(byteOffset, littleEndian) >>> 0;
     },
 
-    getInt16: function(byteOffset, littleEndian) {
+    getInt16: function (byteOffset, littleEndian) {
       return (this.getUint16(byteOffset, littleEndian) << 16) >> 16;
     },
 
-    getUint16: function(byteOffset, littleEndian) {
+    getUint16: function (byteOffset, littleEndian) {
       var b = this._getBytes(2, byteOffset, littleEndian);
       return (b[1] << 8) | b[0];
     },
 
-    getInt8: function(byteOffset) {
+    getInt8: function (byteOffset) {
       return (this.getUint8(byteOffset) << 24) >> 24;
     },
 
-    getUint8: function(byteOffset) {
+    getUint8: function (byteOffset) {
       return this._getBytes(1, byteOffset)[0];
-    }
+    },
   };
 }
 
