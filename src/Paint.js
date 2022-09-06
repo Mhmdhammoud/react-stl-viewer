@@ -211,11 +211,11 @@ class Paint {
 
   addToReactComponent() {
     // Add to the React Component
-    ReactDOM.render(this.component, document.getElementById('loader'));
-    // ReactDOM.findDOMNode(this.component).replaceChild(
-    //   this.renderer.domElement,
-    //   ReactDOM.findDOMNode(this.component).firstChild
-    // );
+    // ReactDOM.render(this.component, document.getElementById('loader'));
+    ReactDOM.findDOMNode(this.component).replaceChild(
+      this.renderer.domElement,
+      ReactDOM.findDOMNode(this.component).firstChild
+    );
   }
 
   /**
