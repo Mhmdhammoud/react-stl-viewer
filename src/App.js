@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import STLViewer from '../../src/STLViewer';
+import STLViewer from './STLViewer';
 import Slider from 'react-input-slider';
-const App = ({ props }) => {
+const App = (props) => {
   const { models, color, rotate = false } = props;
   // const [color, setColor] = useState('rgba(255,0,48,0.2)');
-  const [model, setModel] = useState(undefined);
   // const [models, setModels] = useState([
   //   // 'https://hassans.s3.eu-central-1.amazonaws.com/youssef/order/order_g69r/impressions/order_g69rL.STL',
   //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_outputmodel09-04-2022:20:09:47.stl',
@@ -20,27 +19,7 @@ const App = ({ props }) => {
       }))
     );
   }, [models]);
-
-  const onChange = ({ target }) => {
-    const { files } = target;
-    Promise.all(
-      Object.values(files).map((item, index) => {
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(files[index]);
-        return new Promise((res, rej) => {
-          reader.onload = () => {
-            res(reader.result);
-          };
-        });
-      })
-    ).then((readers) => {
-      const sliders = readers.map((item, index) => ({ index, value: 1 }));
-      this.setState({
-        models: readers,
-        sliders: sliders,
-      });
-    });
-  };
+  if (!models) return null;
   return (
     <div>
       <div style={{ margin: '10px 0px' }}>

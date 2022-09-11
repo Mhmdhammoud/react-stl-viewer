@@ -12,7 +12,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _STLViewer = require('../../src/STLViewer');
+var _STLViewer = require('./STLViewer');
 
 var _STLViewer2 = _interopRequireDefault(_STLViewer);
 
@@ -22,18 +22,12 @@ var _reactInputSlider2 = _interopRequireDefault(_reactInputSlider);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var App = function App(_ref) {
-  var props = _ref.props;
+var App = function App(props) {
   var models = props.models,
       color = props.color,
       _props$rotate = props.rotate,
       rotate = _props$rotate === undefined ? false : _props$rotate;
   // const [color, setColor] = useState('rgba(255,0,48,0.2)');
-
-  var _useState = (0, _react.useState)(undefined),
-      _useState2 = _slicedToArray(_useState, 2),
-      model = _useState2[0],
-      setModel = _useState2[1];
   // const [models, setModels] = useState([
   //   // 'https://hassans.s3.eu-central-1.amazonaws.com/youssef/order/order_g69r/impressions/order_g69rL.STL',
   //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_outputmodel09-04-2022:20:09:47.stl',
@@ -41,11 +35,10 @@ var App = function App(_ref) {
   //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_inputmodel09-05-2022:14:09:33.STL',
   // ]);
 
-
-  var _useState3 = (0, _react.useState)([]),
-      _useState4 = _slicedToArray(_useState3, 2),
-      sliders = _useState4[0],
-      setSliders = _useState4[1];
+  var _useState = (0, _react.useState)([]),
+      _useState2 = _slicedToArray(_useState, 2),
+      sliders = _useState2[0],
+      setSliders = _useState2[1];
 
   (0, _react.useEffect)(function () {
     setSliders(models.map(function (_, index) {
@@ -55,29 +48,7 @@ var App = function App(_ref) {
       };
     }));
   }, [models]);
-
-  var onChange = function onChange(_ref2) {
-    var target = _ref2.target;
-    var files = target.files;
-
-    Promise.all(Object.values(files).map(function (item, index) {
-      var reader = new FileReader();
-      reader.readAsArrayBuffer(files[index]);
-      return new Promise(function (res, rej) {
-        reader.onload = function () {
-          res(reader.result);
-        };
-      });
-    })).then(function (readers) {
-      var sliders = readers.map(function (item, index) {
-        return { index: index, value: 1 };
-      });
-      undefined.setState({
-        models: readers,
-        sliders: sliders
-      });
-    });
-  };
+  if (!models) return null;
   return _react2.default.createElement(
     'div',
     null,
@@ -115,8 +86,8 @@ var App = function App(_ref) {
             xmin: 0.0,
             xmax: 1.0,
             x: item.value,
-            onChange: function onChange(_ref3) {
-              var x = _ref3.x;
+            onChange: function onChange(_ref) {
+              var x = _ref.x;
 
               var newSliders = sliders.map(function (item, i) {
                 if (i === index) {

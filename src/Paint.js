@@ -75,9 +75,9 @@ class Paint {
     return new Promise((resolve) => {
       this.loader.crossOrigin = '';
       this.loader.loadFromUrl(url, (geometry) => {
-        if (this.reqNumber !== reqId) {
-          return;
-        }
+        // if (this.reqNumber !== reqId) {
+        //   return;
+        // }
         resolve(geometry);
       });
     });
@@ -109,6 +109,7 @@ class Paint {
           this.addLight(this.lights);
         }
       }
+
       this.loadSTLFromUrl(item, reqId).then((geometry) => {
         // Calculate mesh noramls for MeshLambertMaterial.
         geometry.computeFaceNormals();

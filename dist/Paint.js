@@ -105,9 +105,9 @@ var Paint = function () {
       return new Promise(function (resolve) {
         _this2.loader.crossOrigin = '';
         _this2.loader.loadFromUrl(url, function (geometry) {
-          if (_this2.reqNumber !== reqId) {
-            return;
-          }
+          // if (this.reqNumber !== reqId) {
+          //   return;
+          // }
           resolve(geometry);
         });
       });
@@ -144,6 +144,7 @@ var Paint = function () {
             _this4.addLight(_this4.lights);
           }
         }
+
         _this4.loadSTLFromUrl(item, reqId).then(function (geometry) {
           // Calculate mesh noramls for MeshLambertMaterial.
           geometry.computeFaceNormals();
