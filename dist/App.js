@@ -42,15 +42,19 @@ var App = function App(_ref) {
   // ]);
 
 
-  var _useState3 = (0, _react.useState)(models.map(function (_, index) {
-    return {
-      index: index,
-      value: 1
-    };
-  })),
+  var _useState3 = (0, _react.useState)([]),
       _useState4 = _slicedToArray(_useState3, 2),
       sliders = _useState4[0],
       setSliders = _useState4[1];
+
+  (0, _react.useEffect)(function () {
+    setSliders(models.map(function (_, index) {
+      return {
+        index: index,
+        value: 1
+      };
+    }));
+  }, [models]);
 
   var onChange = function onChange(_ref2) {
     var target = _ref2.target;
