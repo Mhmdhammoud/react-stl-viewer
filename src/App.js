@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import STLViewer from '../../src/STLViewer';
 import Slider from 'react-input-slider';
 const App = ({ props }) => {
@@ -11,12 +11,15 @@ const App = ({ props }) => {
   //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_faceplatemodel09-04-2022:20:09:2.stl',
   //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_inputmodel09-05-2022:14:09:33.STL',
   // ]);
-  const [sliders, setSliders] = useState(
-    models.map((_, index) => ({
-      index,
-      value: 1,
-    }))
-  );
+  const [sliders, setSliders] = useState([]);
+  useEffect(() => {
+    setSliders(
+      models.map((_, index) => ({
+        index,
+        value: 1,
+      }))
+    );
+  }, [models]);
 
   const onChange = ({ target }) => {
     const { files } = target;
