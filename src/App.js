@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import STLViewer from '../../src/STLViewer';
 import Slider from 'react-input-slider';
-const App = () => {
-  const [color, setColor] = useState('rgba(255,0,48,0.2)');
+const App = ({ props }) => {
+  const { models, color, rotate = false } = props;
+  // const [color, setColor] = useState('rgba(255,0,48,0.2)');
   const [model, setModel] = useState(undefined);
-  const [models, setModels] = useState([
-    // 'https://hassans.s3.eu-central-1.amazonaws.com/youssef/order/order_g69r/impressions/order_g69rL.STL',
-    'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_outputmodel09-04-2022:20:09:47.stl',
-    'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_faceplatemodel09-04-2022:20:09:2.stl',
-    'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_inputmodel09-05-2022:14:09:33.STL',
-  ]);
+  // const [models, setModels] = useState([
+  //   // 'https://hassans.s3.eu-central-1.amazonaws.com/youssef/order/order_g69r/impressions/order_g69rL.STL',
+  //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_outputmodel09-04-2022:20:09:47.stl',
+  //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_faceplatemodel09-04-2022:20:09:2.stl',
+  //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_inputmodel09-05-2022:14:09:33.STL',
+  // ]);
   const [sliders, setSliders] = useState(
     models.map((_, index) => ({
       index,
@@ -87,7 +88,7 @@ const App = () => {
       </div>
       <STLViewer
         modelColor={color}
-        rotate={false}
+        rotate={rotate}
         sliders={sliders}
         models={models}
       />

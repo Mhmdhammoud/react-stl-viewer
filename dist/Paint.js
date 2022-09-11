@@ -16,8 +16,6 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var OrbitControls = require('three-orbit-controls')(_Three2.default);
@@ -34,11 +32,17 @@ var Paint = function () {
       antialias: true
     });
     this.reqNumber = 0;
+    this.loaded = false;
+    this.light = undefined;
   }
 
   _createClass(Paint, [{
     key: 'init',
-    value: function init(context) {
+    value: function init(context, sliders, models) {
+      var _this = this;
+
+      this.models = models;
+      this.sliders = sliders;
       this.component = context;
       this.width = context.props.width;
       this.height = context.props.height;
@@ -54,59 +58,54 @@ var Paint = function () {
       this.lightColor = context.props.lightColor;
       this.model = context.props.model;
 
-      if (this.mesh !== undefined) {
-        this.scene.remove(this.mesh);
-        this.mesh.geometry.dispose();
-        this.mesh.material.dispose();
-        this.scene.remove(this.grid);
-      }
-      var directionalLightObj = this.scene.getObjectByName(DIRECTIONAL_LIGHT);
-      if (directionalLightObj) {
-        this.scene.remove(directionalLightObj);
-      }
+      // if (this.mesh !== undefined) {
+      //   this.scene.remove(this.mesh);
+      //   this.mesh.geometry.dispose();
+      //   this.mesh.material.dispose();
+      //   this.scene.remove(this.grid);
+      // }
 
       if (this.animationRequestId) {
         cancelAnimationFrame(this.animationRequestId);
       }
 
-      //Detector.addGetWebGLMessage();
       this.distance = 10000;
 
-      // lights processing
-      var hasMultipleLights = this.lights.reduce(function (acc, item) {
-        return acc && Array.isArray(item);
-      }, true);
-      if (hasMultipleLights) {
-        this.lights.forEach(this.addLight.bind(this));
-      } else {
-        this.addLight(this.lights);
-      }
-
       this.reqNumber += 1;
-      this.addSTLToScene(this.reqNumber);
+      if (!this.loaded) this.addSTLToScene(this.reqNumber);
+      var meshMaterial = this.scene.children.filter(function (item) {
+        return item.type === 'Mesh';
+      });
+      if (meshMaterial.length === sliders.length) {
+        sliders.map(function (item, index) {
+          meshMaterial[index].material.opacity = item.value;
+          // meshMaterial[index].material.visible = visibleSliders[index].value;
+          meshMaterial[index].updateMatrix();
+          _this.render();
+        });
+      }
+      this.loaded = true;
     }
   }, {
     key: 'addLight',
     value: function addLight(lights) {
-      var _directionalLight$pos;
-
       var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
       var directionalLight = new _Three2.default.DirectionalLight(0xffffff, 0.5);
-      (_directionalLight$pos = directionalLight.position).set.apply(_directionalLight$pos, _toConsumableArray(lights));
       directionalLight.name = DIRECTIONAL_LIGHT + index;
       directionalLight.position.normalize();
+      this.light = directionalLight;
       this.scene.add(directionalLight);
     }
   }, {
     key: 'loadSTLFromUrl',
     value: function loadSTLFromUrl(url, reqId) {
-      var _this = this;
+      var _this2 = this;
 
       return new Promise(function (resolve) {
-        _this.loader.crossOrigin = '';
-        _this.loader.loadFromUrl(url, function (geometry) {
-          if (_this.reqNumber !== reqId) {
+        _this2.loader.crossOrigin = '';
+        _this2.loader.loadFromUrl(url, function (geometry) {
+          if (_this2.reqNumber !== reqId) {
             return;
           }
           resolve(geometry);
@@ -116,10 +115,10 @@ var Paint = function () {
   }, {
     key: 'loadFromFile',
     value: function loadFromFile(file) {
-      var _this2 = this;
+      var _this3 = this;
 
       return new Promise(function (resolve) {
-        _this2.loader.loadFromFile(file, function (geometry) {
+        _this3.loader.loadFromFile(file, function (geometry) {
           resolve(geometry);
         });
       });
@@ -127,86 +126,112 @@ var Paint = function () {
   }, {
     key: 'addSTLToScene',
     value: function addSTLToScene(reqId) {
-      var _this3 = this;
+      var _this4 = this;
 
-      var loadPromise = void 0;
-      if (typeof this.model === 'string') {
-        loadPromise = this.loadSTLFromUrl(this.model, reqId);
-      } else if (this.model instanceof ArrayBuffer) {
-        loadPromise = this.loadFromFile(this.model);
-      } else {
-        return Promise.resolve(null);
-      }
-      return loadPromise.then(function (geometry) {
-        // Calculate mesh noramls for MeshLambertMaterial.
-        geometry.computeFaceNormals();
-        geometry.computeVertexNormals();
+      this.models.map(function (item, index) {
+        if (index === 0) {
+          // while (this.scene.children.length > 0) {
+          //   this.scene.remove(this.scene.children[0]);
+          // }
 
-        // Center the object
-        geometry.center();
-
-        var material = new _Three2.default.MeshLambertMaterial({
-          overdraw: true,
-          color: _this3.modelColor
-        });
-
-        if (geometry.hasColors) {
-          material = new _Three2.default.MeshPhongMaterial({
-            opacity: geometry.alpha,
-            vertexColors: _Three2.default.VertexColors
+          // lights processing
+          var hasMultipleLights = _this4.lights.reduce(function (acc, item) {
+            return acc && Array.isArray(item);
+          }, true);
+          if (hasMultipleLights) {
+            _this4.lights.forEach(_this4.addLight.bind(_this4));
+          } else {
+            _this4.addLight(_this4.lights);
+          }
+        }
+        _this4.loadSTLFromUrl(item, reqId).then(function (geometry) {
+          // Calculate mesh noramls for MeshLambertMaterial.
+          geometry.computeFaceNormals();
+          geometry.computeVertexNormals();
+          // Center the object
+          // geometry.center();
+          var material = new _Three2.default.MeshLambertMaterial({
+            color: _this4.modelColor,
+            transparent: true,
+            opacity: 1,
+            side: _Three2.default.DoubleSide,
+            visible: true
           });
-        }
 
-        _this3.mesh = new _Three2.default.Mesh(geometry, material);
-        // Set the object's dimensions
-        geometry.computeBoundingBox();
-        _this3.xDims = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
-        _this3.yDims = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
-        _this3.zDims = geometry.boundingBox.max.z - geometry.boundingBox.min.z;
+          if (geometry.hasColors) {
+            material = new _Three2.default.MeshPhongMaterial({
+              opacity: geometry.alpha,
+              vertexColors: _Three2.default.VertexColors
+            });
+          }
 
-        if (_this3.rotate) {
-          _this3.mesh.rotation.x = _this3.rotationSpeeds[0];
-          _this3.mesh.rotation.y = _this3.rotationSpeeds[1];
-          _this3.mesh.rotation.z = _this3.rotationSpeeds[2];
-        }
+          _this4.mesh = new _Three2.default.Mesh(geometry, material);
+          // Set the object's dimensions
+          geometry.computeBoundingBox();
+          geometry.computeBoundingSphere();
 
-        _this3.scene.add(_this3.mesh);
+          if (_this4.xDims === undefined) {
+            _this4.xDims = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
+            _this4.yDims = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
+            _this4.zDims = geometry.boundingBox.max.z - geometry.boundingBox.min.z;
+            // this.xDims = geometry.boundingSphere.center.x;
+            // this.yDims = geometry.boundingSphere.center.y;
+            // this.zDims = geometry.boundingSphere.center.z;
+          }
 
-        _this3.addCamera();
-        _this3.addInteractionControls();
-        _this3.addToReactComponent();
+          if (_this4.rotate) {
+            _this4.mesh.rotation.x = _this4.rotationSpeeds[0];
+            _this4.mesh.rotation.y = _this4.rotationSpeeds[1];
+            _this4.mesh.rotation.z = _this4.rotationSpeeds[2];
+          }
 
-        // Start the animation
-        _this3.animate();
+          _this4.mesh.updateMatrix();
+
+          _this4.scene.add(_this4.mesh);
+
+          _this4.addCamera();
+          _this4.light.position.copy(_this4.camera.position);
+
+          _this4.addInteractionControls();
+          _this4.addToReactComponent();
+
+          // Start the animation
+          _this4.animate();
+        });
       });
     }
   }, {
     key: 'addCamera',
     value: function addCamera() {
-      // Add the camera
-      this.camera = new _Three2.default.PerspectiveCamera(30, this.width / this.height, 1, this.distance);
+      if (!this.scene.children.find(function (item) {
+        return item.type === 'PerspectiveCamera';
+      })) {
+        // Add the camera
+        this.camera = new _Three2.default.PerspectiveCamera(30, this.width / this.height, 1, this.distance);
 
-      if (this.cameraZ === null) {
-        this.cameraZ = Math.max(this.xDims * 3, this.yDims * 3, this.zDims * 3);
+        if (this.cameraZ === null) {
+          this.cameraZ = Math.max(this.xDims * 3, this.yDims * 3, this.zDims * 3);
+        }
+
+        this.camera.position.set(this.cameraX, this.cameraY, this.cameraZ);
+        var directionalLight = new _Three2.default.DirectionalLight(0xffffff, 0.5);
+        this.camera.add(directionalLight);
+        this.camera.lookAt(this.mesh);
+        this.scene.add(this.camera);
+
+        this.renderer.physicallyCorrectLights = true;
+        this.renderer.setSize(this.width, this.height);
+        this.renderer.setClearColor(this.backgroundColor, 1);
       }
-
-      this.camera.position.set(this.cameraX, this.cameraY, this.cameraZ);
-      var directionalLight = new _Three2.default.DirectionalLight(0xffffff, 0.5);
-      this.camera.add(directionalLight);
-      this.scene.add(this.camera);
-
-      this.camera.lookAt(this.mesh);
-
-      this.renderer.set;
-      this.renderer.physicallyCorrectLights = true;
-      this.renderer.setSize(this.width, this.height);
-      this.renderer.setClearColor(this.backgroundColor, 1);
     }
   }, {
     key: 'addInteractionControls',
     value: function addInteractionControls() {
       // Add controls for mouse interaction
       if (this.orbitControls) {
+        if (this.controls) {
+          this.controls.dispose();
+        }
         this.controls = new OrbitControls(this.camera, _reactDom2.default.findDOMNode(this.component));
         this.controls.enableKeys = false;
         this.controls.addEventListener('change', this.orbitRender.bind(this));
@@ -216,6 +241,7 @@ var Paint = function () {
     key: 'addToReactComponent',
     value: function addToReactComponent() {
       // Add to the React Component
+      // ReactDOM.render(this.component, document.getElementById('loader'));
       _reactDom2.default.findDOMNode(this.component).replaceChild(this.renderer.domElement, _reactDom2.default.findDOMNode(this.component).firstChild);
     }
 
@@ -249,6 +275,8 @@ var Paint = function () {
       if (this.rotate) {
         this.rotate = false;
       }
+      var directionalLight = this.scene.getObjectByName('directionalLight0');
+      directionalLight.position.copy(this.camera.position);
 
       this.render();
     }
