@@ -19,7 +19,7 @@ const App = (props) => {
       }))
     );
   }, [models]);
-  if (!models) return null;
+  if (!models || sliders.length === 0) return null;
   return (
     <div>
       <div style={{ margin: '10px 0px' }}>

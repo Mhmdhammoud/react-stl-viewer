@@ -17,12 +17,8 @@ class STLViewer extends Component {
     lights: PropTypes.array,
     lightColor: PropTypes.string,
     rotationSpeeds: PropTypes.arrayOf(PropTypes.number),
-    model: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.instanceOf(ArrayBuffer),
-    ]).isRequired,
     models: PropTypes.oneOfType([
-      PropTypes.string,
+      PropTypes.array,
       PropTypes.instanceOf(ArrayBuffer),
     ]).isRequired,
   };
@@ -40,7 +36,6 @@ class STLViewer extends Component {
     lights: [0, 0, 1],
     lightColor: '#ffffff',
     rotationSpeeds: [0, 0, 0.02],
-    model: undefined,
     models: undefined,
   };
   constructor(props) {

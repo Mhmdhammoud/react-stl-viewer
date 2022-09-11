@@ -48,7 +48,7 @@ var App = function App(props) {
       };
     }));
   }, [models]);
-  if (!models) return null;
+  if (!models || sliders.length === 0) return null;
   return _react2.default.createElement(
     'div',
     null,
