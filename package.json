@@ -1,8 +1,8 @@
 {
   "name": "meritt-stl-viewer",
-  "version": "0.12.3",
+  "version": "0.13.5",
   "description": "A component for viewing an STL object from a given URL by utilizing Three.js",
-  "main": "dist/STLViewer.js",
+  "main": "dist/App.js",
   "keywords": [
     "JavaScript",
     "STL",
@@ -10,7 +10,8 @@
     "Three",
     "Three.js",
     "React",
-    "3D"
+    "3D",
+    "Meritt dev"
   ],
   "author": "Mhmdhammoud",
   "license": "MIT",
@@ -25,6 +26,7 @@
   },
   "dependencies": {
     "prop-types": "^15.6.1",
+    "react-input-slider": "^6.0.1",
     "three": "^0.72.0",
     "three-orbit-controls": "^72.0.0"
   },

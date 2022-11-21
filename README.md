@@ -33,6 +33,10 @@ rotate={true}
 orbitControls={true}
 />
 
+## V0.13.4
+
+- Added `remove` `range` `handleRemove` props to the sliders
+
 ## Contributing
 
 - If you test the building of the dist, please do not commit those files.
