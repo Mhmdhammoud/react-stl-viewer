@@ -10,6 +10,11 @@ const App = () => {
         'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_inputmodel09-05-2022:14:09:33.STL',
       ]}
       color="rgba(255,0,48,0.2)"
+      range
+      remove
+      handleRemove={(item) => {
+        console.log(item);
+      }}
     />
   );
 };

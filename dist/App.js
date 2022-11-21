@@ -23,16 +23,26 @@ var _reactInputSlider2 = _interopRequireDefault(_reactInputSlider);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var App = function App(props) {
+  // const {
+  //   rotate = false,
+  //   range = false,
+  //   remove = false,
+  //   handleRemove = () => {},
+  // } = props;
   var models = props.models,
       color = props.color,
       _props$rotate = props.rotate,
-      rotate = _props$rotate === undefined ? false : _props$rotate;
+      rotate = _props$rotate === undefined ? false : _props$rotate,
+      _props$range = props.range,
+      range = _props$range === undefined ? false : _props$range,
+      _props$remove = props.remove,
+      remove = _props$remove === undefined ? false : _props$remove,
+      _props$handleRemove = props.handleRemove,
+      handleRemove = _props$handleRemove === undefined ? function () {} : _props$handleRemove;
   // const [color, setColor] = useState('rgba(255,0,48,0.2)');
   // const [models, setModels] = useState([
   //   // 'https://hassans.s3.eu-central-1.amazonaws.com/youssef/order/order_g69r/impressions/order_g69rL.STL',
-  //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_outputmodel09-04-2022:20:09:47.stl',
-  //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_faceplatemodel09-04-2022:20:09:2.stl',
-  //   'https://hassans.s3.eu-central-1.amazonaws.com/assets/002r_inputmodel09-05-2022:14:09:33.STL',
+  //   'https://hassans.s3.eu-central-1.amazonaws.com/youssef/assets/w4fxL_OutputModel_SLA.stl',
   // ]);
 
   var _useState = (0, _react.useState)([]),
@@ -51,54 +61,73 @@ var App = function App(props) {
   if (!models || sliders.length === 0) return null;
   return _react2.default.createElement(
     'div',
-    null,
+    { style: { width: '400px' } },
     _react2.default.createElement(
       'div',
       { style: { margin: '10px 0px' } },
-      sliders.map(function (item, index) {
+      range && sliders.map(function (item, index) {
         return _react2.default.createElement(
           'div',
           {
             key: index,
             style: {
-              margin: '10px 0px'
+              margin: '10px 0px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
             }
           },
-          _react2.default.createElement('input', {
-            type: 'checkbox',
-            onClick: function onClick(e) {
-              var newSliders = sliders.map(function (item, i) {
-                if (i === index) {
-                  if (e.target.checked) {
-                    return _extends({}, item, { value: 0 });
-                  } else {
-                    return _extends({}, item, { value: 1 });
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement('input', {
+              type: 'checkbox',
+              checked: sliders[index].value > 0,
+              onClick: function onClick(e) {
+                var newSliders = sliders.map(function (item, i) {
+                  if (i === index) {
+                    if (e.target.checked) {
+                      return _extends({}, item, { value: 1 });
+                    } else {
+                      return _extends({}, item, { value: 0 });
+                    }
                   }
-                }
-                return item;
-              });
-              setSliders(newSliders);
-            }
-          }),
-          _react2.default.createElement(_reactInputSlider2.default, {
-            axis: 'x',
-            xstep: 0.1,
-            xmin: 0.0,
-            xmax: 1.0,
-            x: item.value,
-            onChange: function onChange(_ref) {
-              var x = _ref.x;
+                  return item;
+                });
+                setSliders(newSliders);
+              }
+            }),
+            _react2.default.createElement(_reactInputSlider2.default, {
+              axis: 'x',
+              xstep: 0.1,
+              xmin: 0.0,
+              xmax: 1.0,
+              x: item.value,
+              onChange: function onChange(_ref) {
+                var x = _ref.x;
 
-              var newSliders = sliders.map(function (item, i) {
-                if (i === index) {
-                  return _extends({}, item, { value: parseFloat(x) });
-                }
-                return item;
-              });
-              setSliders(newSliders);
-            },
-            style: { marginLeft: '20px' }
-          })
+                var newSliders = sliders.map(function (item, i) {
+                  if (i === index) {
+                    return _extends({}, item, { value: parseFloat(x) });
+                  }
+                  return item;
+                });
+                setSliders(newSliders);
+              },
+              style: { marginLeft: '20px' }
+            })
+          ),
+          remove && _react2.default.createElement(
+            'a',
+            { role: 'button' },
+            _react2.default.createElement('img', {
+              src: 'https://hassans.s3.eu-central-1.amazonaws.com/assets/x11-21-2022:21:11:19.png',
+              style: { width: '21px', cursor: 'pointer' },
+              onClick: function onClick() {
+                handleRemove(models[index]);
+              }
+            })
+          )
         );
       })
     ),
