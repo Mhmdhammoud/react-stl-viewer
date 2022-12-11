@@ -46,6 +46,7 @@ var STLViewer = function (_Component) {
     key: 'componentWillUpdate',
     value: function componentWillUpdate(nextProps, nextState) {
       this.props = nextProps;
+      this.paint = new _Paint2.default();
       this.paint.init(this, this.props.sliders, this.props.models);
     }
   }, {
