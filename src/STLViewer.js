@@ -53,6 +53,7 @@ class STLViewer extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     this.props = nextProps;
+    this.paint = new Paint();
     this.paint.init(this, this.props.sliders, this.props.models);
   }
 
