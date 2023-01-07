@@ -61,7 +61,7 @@ var STLViewer = function (_Component) {
       var _props = this.props,
           width = _props.width,
           height = _props.height,
-          modelColor = _props.modelColor;
+          backgroundColor = _props.backgroundColor;
 
       return _react2.default.createElement(
         'div',
@@ -70,7 +70,8 @@ var STLViewer = function (_Component) {
           style: {
             width: width,
             height: height,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            backgroundColor: backgroundColor
           }
         },
         _react2.default.createElement(
@@ -111,10 +112,10 @@ STLViewer.propTypes = {
   models: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.instanceOf(ArrayBuffer)]).isRequired
 };
 STLViewer.defaultProps = {
-  backgroundColor: '#EAEAEA',
-  modelColor: '#B92C2C',
-  height: 400,
+  backgroundColor: '#fff',
   width: 400,
+  height: 400,
+  modelColor: '#B92C2C',
   rotate: true,
   orbitControls: true,
   cameraX: 0,

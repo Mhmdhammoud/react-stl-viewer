@@ -14,6 +14,10 @@ const App = (props) => {
     rotate = false,
     range = false,
     remove = false,
+    width,
+    height,
+    backgroundColor,
+    className,
     handleRemove = () => {},
   } = props;
   // const [color, setColor] = useState('rgba(255,0,48,0.2)');
@@ -102,6 +106,10 @@ const App = (props) => {
         rotate={rotate}
         sliders={sliders}
         models={models}
+        width={width}
+        height={height}
+        backgroundColor={backgroundColor}
+        className={className}
       />
     </div>
   );

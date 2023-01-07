@@ -37,6 +37,10 @@ var App = function App(props) {
       range = _props$range === undefined ? false : _props$range,
       _props$remove = props.remove,
       remove = _props$remove === undefined ? false : _props$remove,
+      width = props.width,
+      height = props.height,
+      backgroundColor = props.backgroundColor,
+      className = props.className,
       _props$handleRemove = props.handleRemove,
       handleRemove = _props$handleRemove === undefined ? function () {} : _props$handleRemove;
   // const [color, setColor] = useState('rgba(255,0,48,0.2)');
@@ -135,7 +139,11 @@ var App = function App(props) {
       modelColor: color,
       rotate: rotate,
       sliders: sliders,
-      models: models
+      models: models,
+      width: width,
+      height: height,
+      backgroundColor: backgroundColor,
+      className: className
     })
   );
 };
