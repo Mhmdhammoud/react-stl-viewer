@@ -24,10 +24,10 @@ class STLViewer extends Component {
   };
 
   static defaultProps = {
-    backgroundColor: '#EAEAEA',
-    modelColor: '#B92C2C',
-    height: 400,
+    backgroundColor: '#fff',
     width: 400,
+    height: 400,
+    modelColor: '#B92C2C',
     rotate: true,
     orbitControls: true,
     cameraX: 0,
@@ -63,7 +63,7 @@ class STLViewer extends Component {
   }
 
   render() {
-    const { width, height, modelColor } = this.props;
+    const { width, height, backgroundColor } = this.props;
     return (
       <div
         className={this.props.className}
@@ -71,6 +71,7 @@ class STLViewer extends Component {
           width: width,
           height: height,
           overflow: 'hidden',
+          backgroundColor: backgroundColor,
         }}
       >
         <div
