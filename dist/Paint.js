@@ -172,9 +172,9 @@ var Paint = function () {
           geometry.computeBoundingSphere();
 
           if (_this4.xDims === undefined) {
-            _this4.xDims = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
-            _this4.yDims = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
-            _this4.zDims = geometry.boundingBox.max.z - geometry.boundingBox.min.z;
+            _this4.xDims = geometry.boundingBox.max.x;
+            _this4.yDims = geometry.boundingBox.max.y;
+            _this4.zDims = geometry.boundingBox.max.z;
             // this.xDims = geometry.boundingSphere.center.x;
             // this.yDims = geometry.boundingSphere.center.y;
             // this.zDims = geometry.boundingSphere.center.z;

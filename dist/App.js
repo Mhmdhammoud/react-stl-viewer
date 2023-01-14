@@ -65,7 +65,7 @@ var App = function App(props) {
   if (!models || sliders.length === 0) return null;
   return _react2.default.createElement(
     'div',
-    { style: { width: '400px' } },
+    null,
     _react2.default.createElement(
       'div',
       { style: { margin: '10px 0px' } },
