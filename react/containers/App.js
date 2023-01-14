@@ -8,7 +8,7 @@ const App = () => {
       ]}
       color="rgba(255,0,48,0.2)"
       range
-      width={1000}
+      width={1200}
       height={1000}
       remove
       handleRemove={(item) => {

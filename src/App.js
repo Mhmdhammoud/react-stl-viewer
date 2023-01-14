@@ -36,7 +36,7 @@ const App = (props) => {
   }, [models]);
   if (!models || sliders.length === 0) return null;
   return (
-    <div style={{ width: '400px' }}>
+    <div>
       <div style={{ margin: '10px 0px' }}>
         {range &&
           sliders.map((item, index) => {
