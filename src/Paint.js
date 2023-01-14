@@ -137,9 +137,9 @@ class Paint {
         geometry.computeBoundingSphere();
 
         if (this.xDims === undefined) {
-          this.xDims = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
-          this.yDims = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
-          this.zDims = geometry.boundingBox.max.z - geometry.boundingBox.min.z;
+          this.xDims = geometry.boundingBox.max.x;
+          this.yDims = geometry.boundingBox.max.y;
+          this.zDims = geometry.boundingBox.max.z;
           // this.xDims = geometry.boundingSphere.center.x;
           // this.yDims = geometry.boundingSphere.center.y;
           // this.zDims = geometry.boundingSphere.center.z;
