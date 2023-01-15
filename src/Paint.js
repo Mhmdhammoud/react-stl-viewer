@@ -16,9 +16,9 @@ class Paint {
     this.light = undefined;
   }
 
-  init(context, sliders, models) {
-    this.models = models;
-    this.sliders = sliders;
+  init(context) {
+    this.models = context.props.models;
+    this.sliders = context.props.sliders;
     this.component = context;
     this.width = context.props.width;
     this.height = context.props.height;
@@ -33,6 +33,7 @@ class Paint {
     this.lights = context.props.lights;
     this.lightColor = context.props.lightColor;
     this.model = context.props.model;
+    this.fov = context.props.fov;
 
     // if (this.mesh !== undefined) {
     //   this.scene.remove(this.mesh);
@@ -52,8 +53,8 @@ class Paint {
     const meshMaterial = this.scene.children.filter(
       (item) => item.type === 'Mesh'
     );
-    if (meshMaterial.length === sliders.length) {
-      sliders.map((item, index) => {
+    if (meshMaterial.length === context.props.sliders.length) {
+      context.props.sliders.map((item, index) => {
         meshMaterial[index].material.opacity = item.value;
         // meshMaterial[index].material.visible = visibleSliders[index].value;
         meshMaterial[index].updateMatrix();
@@ -137,7 +138,8 @@ class Paint {
         geometry.computeBoundingSphere();
 
         if (this.xDims === undefined) {
-          this.xDims = geometry.boundingBox.max.x;
+          this.xDims =
+            geometry.boundingBox.max.x - geometry.boundingBox.min.x - 40;
           this.yDims = geometry.boundingBox.max.y;
           this.zDims = geometry.boundingBox.max.z;
           // this.xDims = geometry.boundingSphere.center.x;
@@ -152,7 +154,6 @@ class Paint {
         }
 
         this.mesh.updateMatrix();
-
         this.scene.add(this.mesh);
 
         this.addCamera();
@@ -166,14 +167,13 @@ class Paint {
       });
     });
   }
-
   addCamera() {
     if (
       !this.scene.children.find((item) => item.type === 'PerspectiveCamera')
     ) {
       // Add the camera
       this.camera = new THREE.PerspectiveCamera(
-        30,
+        this.fov,
         this.width / this.height,
         1,
         this.distance
