@@ -19,6 +19,7 @@ const App = (props) => {
     backgroundColor,
     className,
     handleRemove = () => {},
+    fov = 45,
   } = props;
   // const [color, setColor] = useState('rgba(255,0,48,0.2)');
   // const [models, setModels] = useState([
@@ -110,6 +111,7 @@ const App = (props) => {
         height={height}
         backgroundColor={backgroundColor}
         className={className}
+        fov={fov}
       />
     </div>
   );

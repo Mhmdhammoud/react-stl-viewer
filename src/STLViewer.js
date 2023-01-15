@@ -44,7 +44,7 @@ class STLViewer extends Component {
 
   componentDidMount() {
     this.paint = new Paint();
-    this.paint.init(this, this.props.sliders, this.props.models);
+    this.paint.init(this);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -53,8 +53,7 @@ class STLViewer extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     this.props = nextProps;
-    this.paint = new Paint();
-    this.paint.init(this, this.props.sliders, this.props.models);
+    this.paint.init(this);
   }
 
   componentWillUnmount() {
