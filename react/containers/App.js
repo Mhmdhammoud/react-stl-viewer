@@ -12,7 +12,7 @@ const App = () => {
       height={1000}
       backgroundColor="#e8e8e8"
       remove
-      fov={45}
+      fov={200}
       handleRemove={(item) => {
         console.log(item);
       }}
