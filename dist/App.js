@@ -42,7 +42,9 @@ var App = function App(props) {
       backgroundColor = props.backgroundColor,
       className = props.className,
       _props$handleRemove = props.handleRemove,
-      handleRemove = _props$handleRemove === undefined ? function () {} : _props$handleRemove;
+      handleRemove = _props$handleRemove === undefined ? function () {} : _props$handleRemove,
+      _props$fov = props.fov,
+      fov = _props$fov === undefined ? 45 : _props$fov;
   // const [color, setColor] = useState('rgba(255,0,48,0.2)');
   // const [models, setModels] = useState([
   //   // 'https://hassans.s3.eu-central-1.amazonaws.com/youssef/order/order_g69r/impressions/order_g69rL.STL',
@@ -143,7 +145,8 @@ var App = function App(props) {
       width: width,
       height: height,
       backgroundColor: backgroundColor,
-      className: className
+      className: className,
+      fov: fov
     })
   );
 };

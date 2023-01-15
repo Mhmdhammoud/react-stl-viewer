@@ -38,11 +38,11 @@ var Paint = function () {
 
   _createClass(Paint, [{
     key: 'init',
-    value: function init(context, sliders, models) {
+    value: function init(context) {
       var _this = this;
 
-      this.models = models;
-      this.sliders = sliders;
+      this.models = context.props.models;
+      this.sliders = context.props.sliders;
       this.component = context;
       this.width = context.props.width;
       this.height = context.props.height;
@@ -57,6 +57,7 @@ var Paint = function () {
       this.lights = context.props.lights;
       this.lightColor = context.props.lightColor;
       this.model = context.props.model;
+      this.fov = context.props.fov;
 
       // if (this.mesh !== undefined) {
       //   this.scene.remove(this.mesh);
@@ -76,8 +77,8 @@ var Paint = function () {
       var meshMaterial = this.scene.children.filter(function (item) {
         return item.type === 'Mesh';
       });
-      if (meshMaterial.length === sliders.length) {
-        sliders.map(function (item, index) {
+      if (meshMaterial.length === context.props.sliders.length) {
+        context.props.sliders.map(function (item, index) {
           meshMaterial[index].material.opacity = item.value;
           // meshMaterial[index].material.visible = visibleSliders[index].value;
           meshMaterial[index].updateMatrix();
@@ -187,7 +188,6 @@ var Paint = function () {
           }
 
           _this4.mesh.updateMatrix();
-
           _this4.scene.add(_this4.mesh);
 
           _this4.addCamera();
@@ -208,7 +208,7 @@ var Paint = function () {
         return item.type === 'PerspectiveCamera';
       })) {
         // Add the camera
-        this.camera = new _Three2.default.PerspectiveCamera(30, this.width / this.height, 1, this.distance);
+        this.camera = new _Three2.default.PerspectiveCamera(this.fov, this.width / this.height, 1, this.distance);
 
         if (this.cameraZ === null) {
           this.cameraZ = Math.max(this.xDims * 3, this.yDims * 3, this.zDims * 3);
