@@ -48,14 +48,22 @@ class STLViewer extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return JSON.stringify(nextProps) !== JSON.stringify(this.props);
+    if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
+      if (
+        JSON.stringify(nextProps.sliders) === JSON.stringify(this.props.sliders)
+      ) {
+        this.paint = new Paint();
+      }
+      return true;
+    }
+    return false;
+    // return JSON.stringify(nextProps) !== JSON.stringify(this.props);
   }
 
   componentWillUpdate(nextProps, nextState) {
     this.props = nextProps;
     this.paint.init(this);
   }
-
   componentWillUnmount() {
     this.paint.clean();
     delete this.paint;
