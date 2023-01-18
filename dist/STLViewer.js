@@ -40,7 +40,14 @@ var STLViewer = function (_Component) {
   }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
-      return JSON.stringify(nextProps) !== JSON.stringify(this.props);
+      if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
+        if (JSON.stringify(nextProps.sliders) === JSON.stringify(this.props.sliders)) {
+          this.paint = new _Paint2.default();
+        }
+        return true;
+      }
+      return false;
+      // return JSON.stringify(nextProps) !== JSON.stringify(this.props);
     }
   }, {
     key: 'componentWillUpdate',
