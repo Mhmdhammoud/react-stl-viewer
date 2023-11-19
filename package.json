@@ -1,6 +1,6 @@
 {
   "name": "meritt-stl-viewer",
-  "version": "0.13.11",
+  "version": "0.13.12",
   "description": "A component for viewing an STL object from a given URL by utilizing Three.js",
   "main": "dist/App.js",
   "keywords": [
